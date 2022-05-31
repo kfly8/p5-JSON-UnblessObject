@@ -1,4 +1,4 @@
-name = "Object-UnblessWithJSONSpec"
+name = "JSON-UnblessObject"
 badges = ["github-actions/test.yml","codecov","metacpan"]
 authority="cpan:KFLY"
 

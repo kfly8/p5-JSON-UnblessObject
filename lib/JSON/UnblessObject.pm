@@ -1,4 +1,4 @@
-package Object::UnblessWithJSONSpec;
+package JSON::UnblessObject;
 use strict;
 use warnings;
 
@@ -7,7 +7,7 @@ use parent qw(Exporter);
 our $VERSION = "0.01";
 
 our @EXPORT_OK = qw(
-    unbless_with_json_spec
+    unbless_object
 );
 
 use Scalar::Util qw(
@@ -27,7 +27,7 @@ use constant JSON_TYPE_HASHOF_CLASS  => 'Cpanel::JSON::XS::Type::HashOf';
 use constant JSON_TYPE_ANYOF_CLASS   => 'Cpanel::JSON::XS::Type::AnyOf';
 
 
-sub unbless_with_json_spec {
+sub unbless_object {
     my ($object, $spec) = @_;
 
     return $object unless blessed($object);
@@ -92,7 +92,7 @@ sub resolve_arrayref {
     for my $i (0 .. $#$spec) {
         my $v = $list->[$i];
         my $s = $spec->[$i];
-        push @data => unbless_with_json_spec($v, $s);
+        push @data => unbless_object($v, $s);
     }
     return \@data;
 }
@@ -105,7 +105,7 @@ sub resolve_hashref {
     for my $key (keys %$spec) {
         my $v = $object->$key;
         my $s = $spec->{$key};
-        $data{$key} = unbless_with_json_spec($v, $s)
+        $data{$key} = unbless_object($v, $s)
     }
     return \%data;
 }
@@ -119,7 +119,7 @@ sub resolve_json_type_arrayof {
     my @data;
     my $list = list($object);
     for my $v (@$list) {
-        push @data => unbless_with_json_spec($v, $s);
+        push @data => unbless_object($v, $s);
     }
     return \@data;
 }
@@ -134,7 +134,7 @@ sub resolve_json_type_hashof {
         my %data;
         for my $key ($object->JSON_KEYS) {
             my $v = $object->$key;
-            $data{$key} = unbless_with_json_spec($v, $s)
+            $data{$key} = unbless_object($v, $s)
         }
         return \%data;
     }
@@ -151,7 +151,7 @@ sub resolve_json_type_anyof {
           : available_hash($object)  ? $spec->[2]
           : $spec->[0];
 
-    return unbless_with_json_spec($object, $s);
+    return unbless_object($object, $s);
 }
 
 1;
@@ -161,16 +161,15 @@ __END__
 
 =head1 NAME
 
-Object::UnblessWithJSONSpec - unbless object using JSON spec like Cpanel::JSON::XS::Type
+JSON::UnblessObject - unbless object using JSON spec like Cpanel::JSON::XS::Type
 
 =head1 SYNOPSIS
 
-    use Object::UnblessWithJSONSpec qw(unbless_with_json_spec);
+    use JSON::UnblessObject qw(unbless_object);
 
     use Cpanel::JSON::XS::Type;
 
-    {
-        package SomeEntity;
+    package SomeEntity {
         sub new {
             my ($class, %args) = @_;
             return bless \%args, $class
@@ -181,29 +180,26 @@ Object::UnblessWithJSONSpec - unbless object using JSON spec like Cpanel::JSON::
 
     my $entity = SomeEntity->new(a => 123, b => 'HELLO');
 
-    unbless_with_json_spec($entity, { a => JSON_TYPE_INT });
+    unbless_object($entity, { a => JSON_TYPE_INT });
     # => { a => 123 }
 
-    unbless_with_json_spec($entity, { b => JSON_TYPE_STRING });
+    unbless_object($entity, { b => JSON_TYPE_STRING });
     # => { b => 'HELLO' }
 
-    unbless_with_json_spec($entity, { a => JSON_TYPE_INT, b => JSON_TYPE_STRING });
+    unbless_object($entity, { a => JSON_TYPE_INT, b => JSON_TYPE_STRING });
     # => { a => 123, b => 'HELLO' }
 
 
 =head1 DESCRIPTION
 
-Object::UnblessWithJSONSpec is designed to assist with JSON encode.
+JSON::UnblessObject is designed to assist with JSON encode.
 For example, an blessed object can be encoded using JSON spec:
-
-    use Cpanel::JSON::XS ();
-    use Scalar::Util qw(blessed);
 
     my $json = Cpanel::JSON::XS->new->canonical;
     sub encode_json {
         my ($data, $spec) = @_;
 
-        $data = unbless_with_json_spec($data, $spec) if blessed $data;
+        $data = unbless_object($data, $spec) if blessed $data;
         $json->encode($data, $spec)
     }
 

@@ -12,7 +12,7 @@
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
       "version" : 2
    },
-   "name" : "Object-UnblessWithJSONSpec",
+   "name" : "JSON-UnblessObject",
    "no_index" : {
       "directory" : [
          "t",
@@ -59,13 +59,13 @@
    "release_status" : "unstable",
    "resources" : {
       "bugtracker" : {
-         "web" : "https://github.com/kfly8/p5-Object-UnblessWithJSONSpec/issues"
+         "web" : "https://github.com/kfly8/p5-JSON-UnblessObject/issues"
       },
-      "homepage" : "https://github.com/kfly8/p5-Object-UnblessWithJSONSpec",
+      "homepage" : "https://github.com/kfly8/p5-JSON-UnblessObject",
       "repository" : {
          "type" : "git",
-         "url" : "https://github.com/kfly8/p5-Object-UnblessWithJSONSpec.git",
-         "web" : "https://github.com/kfly8/p5-Object-UnblessWithJSONSpec"
+         "url" : "https://github.com/kfly8/p5-JSON-UnblessObject.git",
+         "web" : "https://github.com/kfly8/p5-JSON-UnblessObject"
       }
    },
    "version" : "0.01",

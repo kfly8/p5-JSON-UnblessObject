@@ -1,6 +1,6 @@
 use Test2::V0;
 
-use Object::UnblessWithJSONSpec;
+use JSON::UnblessObject;
 
 pass;
 

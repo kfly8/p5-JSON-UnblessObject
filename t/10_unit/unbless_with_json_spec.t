@@ -3,8 +3,8 @@ use Test2::Require::Module 'Cpanel::JSON::XS::Type';
 
 use Cpanel::JSON::XS::Type;
 
-use Object::UnblessWithJSONSpec qw(
-    unbless_with_json_spec
+use JSON::UnblessObject qw(
+    unbless_object
 );
 
 {
@@ -63,55 +63,55 @@ use Object::UnblessWithJSONSpec qw(
 }
 
 subtest 'When object is unbless value, then it returns same value' => sub {
-    is unbless_with_json_spec(123), 123;
-    is unbless_with_json_spec('hello'), 'hello';
-    is unbless_with_json_spec({}), {};
-    is unbless_with_json_spec([]), [];
+    is unbless_object(123), 123;
+    is unbless_object('hello'), 'hello';
+    is unbless_object({}), {};
+    is unbless_object([]), [];
 };
 
 subtest 'When spec is not passed, then it returns same value' => sub {
     my $foo = Foo->new;
-    is unbless_with_json_spec($foo), $foo;
+    is unbless_object($foo), $foo;
 };
 
 subtest 'When spec is scalar, then it returns same value' => sub {
     my $foo = Foo->new;
 
-    is unbless_with_json_spec($foo, 'hoge'), $foo;
-    is unbless_with_json_spec($foo, 123), $foo;
-    is unbless_with_json_spec($foo, JSON_TYPE_INT), $foo;
-    is unbless_with_json_spec($foo, JSON_TYPE_STRING), $foo;
+    is unbless_object($foo, 'hoge'), $foo;
+    is unbless_object($foo, 123), $foo;
+    is unbless_object($foo, JSON_TYPE_INT), $foo;
+    is unbless_object($foo, JSON_TYPE_STRING), $foo;
 };
 
 subtest 'When spec is arrayref, then it returns unblessed value' => sub {
 
-    like dies { unbless_with_json_spec(Foo->new, [ ]) },
+    like dies { unbless_object(Foo->new, [ ]) },
          qr/object could not be converted to array ref/;
 
     subtest 'object is overloading @{}' => sub {
         my $collection = OverloadingCollection->new(['aaa', 'bbb']);
 
-        is unbless_with_json_spec($collection, [ JSON_TYPE_STRING, JSON_TYPE_STRING ]), [ 'aaa', 'bbb' ];
-        is unbless_with_json_spec($collection, [ JSON_TYPE_STRING ]), [ 'aaa' ];
-        is unbless_with_json_spec($collection, [ ]), [ ];
+        is unbless_object($collection, [ JSON_TYPE_STRING, JSON_TYPE_STRING ]), [ 'aaa', 'bbb' ];
+        is unbless_object($collection, [ JSON_TYPE_STRING ]), [ 'aaa' ];
+        is unbless_object($collection, [ ]), [ ];
     };
 
     subtest 'object is iteratable' => sub {
         my $collection = IteratableCollection->new(['aaa', 'bbb']);
 
-        is unbless_with_json_spec($collection, [ JSON_TYPE_STRING, JSON_TYPE_STRING ]), [ 'aaa', 'bbb' ];
-        is unbless_with_json_spec($collection, [ JSON_TYPE_STRING ]), [ 'aaa' ];
-        is unbless_with_json_spec($collection, [ ]), [ ];
+        is unbless_object($collection, [ JSON_TYPE_STRING, JSON_TYPE_STRING ]), [ 'aaa', 'bbb' ];
+        is unbless_object($collection, [ JSON_TYPE_STRING ]), [ 'aaa' ];
+        is unbless_object($collection, [ ]), [ ];
     };
 };
 
 subtest 'When spec is hashref, then it returns unblessed value' => sub {
     my $foo = Foo->new;
 
-    is unbless_with_json_spec($foo, { num => JSON_TYPE_INT }),    { num => 123 };
-    is unbless_with_json_spec($foo, { str => JSON_TYPE_STRING }), { str => "HELLO" };
+    is unbless_object($foo, { num => JSON_TYPE_INT }),    { num => 123 };
+    is unbless_object($foo, { str => JSON_TYPE_STRING }), { str => "HELLO" };
 
-    is unbless_with_json_spec($foo,
+    is unbless_object($foo,
         {
             num => JSON_TYPE_INT,
             str => JSON_TYPE_STRING,
@@ -125,22 +125,22 @@ subtest 'When spec is hashref, then it returns unblessed value' => sub {
 subtest 'When spec is a reference that is neither arrayref nor hashref, throw exception' => sub {
     my $foo = Foo->new;
 
-    like dies { unbless_with_json_spec($foo, sub { }) }, qr/reference not supported spec/;
-    like dies { unbless_with_json_spec($foo, \1) }, qr/reference not supported spec/;
+    like dies { unbless_object($foo, sub { }) }, qr/reference not supported spec/;
+    like dies { unbless_object($foo, \1) }, qr/reference not supported spec/;
 };
 
 subtest 'When spec is JSON_TYPE_ARRAYOF_CLASS, then it returns unbless value' => sub {
     my $collection = OverloadingCollection->new(['aaa', 'bbb']);
 
-    is unbless_with_json_spec($collection, json_type_arrayof(JSON_TYPE_STRING)), ['aaa', 'bbb'];
+    is unbless_object($collection, json_type_arrayof(JSON_TYPE_STRING)), ['aaa', 'bbb'];
 };
 
 subtest 'When spec is JSON_TYPE_HASHOF_CLASS, then it returns unbless value' => sub {
 
-    like dies { unbless_with_json_spec(Foo->new, json_type_hashof(JSON_TYPE_STRING)) },
+    like dies { unbless_object(Foo->new, json_type_hashof(JSON_TYPE_STRING)) },
          qr/object could not call JSON_KEYS method/;
 
-    is unbless_with_json_spec(Bar->new, json_type_hashof(JSON_TYPE_STRING)), { a => 'AAA' };
+    is unbless_object(Bar->new, json_type_hashof(JSON_TYPE_STRING)), { a => 'AAA' };
 };
 
 subtest 'When spec is JSON_TYPE_ANYOF_CLASS, then it returns unbless value' => sub {
@@ -151,24 +151,24 @@ subtest 'When spec is JSON_TYPE_ANYOF_CLASS, then it returns unbless value' => s
                );
 
     subtest 'object that can be converted to array' => sub {
-        is unbless_with_json_spec(OverloadingCollection->new(['aaa', 'bbb']), $spec), ['aaa', 'bbb'];
-        is unbless_with_json_spec(IteratableCollection->new(['aaa', 'bbb']), $spec), ['aaa', 'bbb'];
+        is unbless_object(OverloadingCollection->new(['aaa', 'bbb']), $spec), ['aaa', 'bbb'];
+        is unbless_object(IteratableCollection->new(['aaa', 'bbb']), $spec), ['aaa', 'bbb'];
     };
 
     subtest 'object that can be converted to hash' => sub {
-        is unbless_with_json_spec(Bar->new, $spec), { a => 'AAA' };
+        is unbless_object(Bar->new, $spec), { a => 'AAA' };
     };
 
     subtest 'object that cannot be converted to array and hash' => sub {
         my $foo = Foo->new;
-        is unbless_with_json_spec($foo, $spec), $foo;
+        is unbless_object($foo, $spec), $foo;
     };
 };
 
 subtest 'When unknown blessed spec, throw exception' => sub {
     my $spec = bless {}, 'UnknownSpec';
 
-    like dies { unbless_with_json_spec(Foo->new, $spec) }, qr/object not supported spec/;
+    like dies { unbless_object(Foo->new, $spec) }, qr/object not supported spec/;
 };
 
 subtest 'When spec is a complex combination of JSON_TYPE_ARRAYOF and HASH' => sub {
@@ -216,7 +216,7 @@ subtest 'When spec is a complex combination of JSON_TYPE_ARRAYOF and HASH' => su
         }
     ];
 
-    is unbless_with_json_spec($collection, $spec), $expected;
+    is unbless_object($collection, $spec), $expected;
 };
 
 done_testing;
