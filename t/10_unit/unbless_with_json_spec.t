@@ -7,7 +7,8 @@ use Object::UnblessWithJSONSpec qw(
     unbless_with_json_spec
 );
 
-package Foo {
+{
+    package Foo;
     sub new  {
         my ($class, %args) = @_;
         bless \%args, $class
@@ -19,14 +20,16 @@ package Foo {
     sub id   { $_[0]->{id} }
 }
 
-package Bar {
+{
+    package Bar;
     sub new { bless {}, $_[0] }
     sub a { "AAA" }
 
     sub JSON_KEYS { qw/a/ }
 }
 
-package OverloadingCollection {
+{
+    package OverloadingCollection;
     sub new {
         my ($class, $list) = @_;
         bless { list => $list }, $class;
@@ -37,7 +40,8 @@ package OverloadingCollection {
         fallback => 1;
 }
 
-package IteratableCollection {
+{
+    package IteratableCollection;
     sub new {
         my ($class, $list) = @_;
         bless $list, $class;
