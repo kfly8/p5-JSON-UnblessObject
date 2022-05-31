@@ -15,6 +15,10 @@ use Scalar::Util qw(
     reftype
 );
 
+use List::Util qw(
+    any
+);
+
 use overload ();
 
 
@@ -46,20 +50,15 @@ sub unbless_with_json_spec {
     return $object;
 }
 
-sub is_iterator {
-    my ($object) = @_;
-
-    blessed $object && $object->can('next');
-}
-
 
 sub list {
     my ($object) = @_;
 
-    return [] unless $object;
-    return $object if ref $object eq 'ARRAY';
+    if (my $to_list = overload::Method($object,'@{}')) {
+        return $to_list->($object);
+    }
 
-    if(is_iterator($object)) {
+    if ($object->can('next')) {
         my @list;
         while (defined (my $v = $object->next)) {
             push @list => $v;
@@ -67,11 +66,21 @@ sub list {
         return \@list;
     }
 
-    if(blessed $object && overload::Method($object,'@{}')) {
-        return @$object;
-    }
-
     Carp::croak sprintf("'%s' object could not be converted to array ref", $object);
+}
+
+
+sub available_array {
+    my ($object) = @_;
+    my $f = overload::Method($object, '@{}') || $object->can('next');
+    return !!$f
+}
+
+
+sub available_hash {
+    my ($object) = @_;
+    my $f = $object->can('JSON_KEYS');
+    return !!$f;
 }
 
 
@@ -130,7 +139,7 @@ sub resolve_json_type_hashof {
         return \%data;
     }
     else {
-        Carp::croak 'json_type_hashof ';
+        Carp::croak sprintf("'%s' object could not call JSON_KEYS method", $object);
     }
 }
 
@@ -138,9 +147,8 @@ sub resolve_json_type_hashof {
 sub resolve_json_type_anyof {
     my ($object, $spec) = @_;
 
-    my $reftype = reftype($object);
-    my $s = $reftype eq 'ARRAY' ? $spec->[1]
-          : $reftype eq 'HASH'  ? $spec->[2]
+    my $s = available_array($object) ? $spec->[1]
+          : available_hash($object)  ? $spec->[2]
           : $spec->[0];
 
     return unbless_with_json_spec($object, $s);

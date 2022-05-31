@@ -1,6 +1,12 @@
-requires 'perl', '5.008001';
+requires 'perl', '5.010001';
+
+requires 'overload';
+requires 'Carp';
+requires 'Scalar::Util';
+requires 'List::Util';
 
 on 'test' => sub {
-    requires 'Test::More', '0.98';
-};
+    requires 'Test2::V0', '0.000135';
+    requires 'Module::Build::Tiny', '0.035';
+}
 

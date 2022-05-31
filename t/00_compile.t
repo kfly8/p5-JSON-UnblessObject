@@ -1,9 +1,7 @@
-use strict;
-use Test::More 0.98;
+use Test2::V0;
 
-use_ok $_ for qw(
-    Object::UnblessWithJSONSpec
-);
+use Object::UnblessWithJSONSpec;
+
+pass;
 
 done_testing;
-
