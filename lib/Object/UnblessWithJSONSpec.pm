@@ -161,15 +161,61 @@ __END__
 
 =head1 NAME
 
-Object::UnblessWithJSONSpec - It's new $module
+Object::UnblessWithJSONSpec - unbless object using JSON spec like Cpanel::JSON::XS::Type
 
 =head1 SYNOPSIS
 
-    use Object::UnblessWithJSONSpec;
+    use Object::UnblessWithJSONSpec qw(unbless_with_json_spec);
+
+    use Cpanel::JSON::XS::Type;
+
+    {
+        package SomeEntity;
+        sub new {
+            my ($class, %args) = @_;
+            return bless \%args, $class
+        }
+        sub a { shift->{a} }
+        sub b { shift->{b} }
+    }
+
+    my $entity = SomeEntity->new(a => 123, b => 'HELLO');
+
+    unbless_with_json_spec($entity, { a => JSON_TYPE_INT });
+    # => { a => 123 }
+
+    unbless_with_json_spec($entity, { b => JSON_TYPE_STRING });
+    # => { b => 'HELLO' }
+
+    unbless_with_json_spec($entity, { a => JSON_TYPE_INT, b => JSON_TYPE_STRING });
+    # => { a => 123, b => 'HELLO' }
+
 
 =head1 DESCRIPTION
 
-Object::UnblessWithJSONSpec is ...
+Object::UnblessWithJSONSpec is designed to assist with JSON encode.
+For example, an blessed object can be encoded using JSON spec:
+
+    use Cpanel::JSON::XS ();
+    use Scalar::Util qw(blessed);
+
+    my $json = Cpanel::JSON::XS->new->canonical;
+    sub encode_json {
+        my ($data, $spec) = @_;
+
+        $data = unbless_with_json_spec($data, $spec) if blessed $data;
+        $json->encode($data, $spec)
+    }
+
+    encode_json($entity, { a => JSON_TYPE_INT });
+    # => {"a":123}
+
+    encode_json($entity, { b => JSON_TYPE_STRING });
+    # => {"b":"HELLO"}
+
+    encode_json($entity, { a => JSON_TYPE_INT, b => JSON_TYPE_STRING }),
+    # => {"a":123,"b":"HELLO"}
+
 
 =head1 LICENSE
 
