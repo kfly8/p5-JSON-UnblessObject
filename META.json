@@ -1,5 +1,5 @@
 {
-   "abstract" : "It's new $module",
+   "abstract" : "unbless object using JSON spec like Cpanel::JSON::XS::Type",
    "author" : [
       "kfly8 <kfly@cpan.org>"
    ],
@@ -42,16 +42,32 @@
       },
       "runtime" : {
          "requires" : {
-            "perl" : "5.008001"
+            "Carp" : "0",
+            "List::Util" : "1.33",
+            "Scalar::Util" : "0",
+            "overload" : "0",
+            "perl" : "5.010001"
          }
       },
       "test" : {
          "requires" : {
-            "Test::More" : "0.98"
+            "Module::Build::Tiny" : "0.035",
+            "Test2::V0" : "0.000135"
          }
       }
    },
    "release_status" : "unstable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/kfly8/p5-Object-UnblessWithJSONSpec/issues"
+      },
+      "homepage" : "https://github.com/kfly8/p5-Object-UnblessWithJSONSpec",
+      "repository" : {
+         "type" : "git",
+         "url" : "https://github.com/kfly8/p5-Object-UnblessWithJSONSpec.git",
+         "web" : "https://github.com/kfly8/p5-Object-UnblessWithJSONSpec"
+      }
+   },
    "version" : "0.01",
    "x_authority" : "cpan:KFLY",
    "x_serialization_backend" : "JSON::PP version 4.06",
