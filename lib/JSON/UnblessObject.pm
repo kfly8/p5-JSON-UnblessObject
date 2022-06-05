@@ -10,15 +10,8 @@ our @EXPORT_OK = qw(
     unbless_object
 );
 
-use Scalar::Util qw(
-    blessed
-    reftype
-);
-
-use List::Util qw(
-    any
-);
-
+use Scalar::Util qw(blessed);
+use List::Util qw(any);
 use overload ();
 
 
