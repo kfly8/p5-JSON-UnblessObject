@@ -25,6 +25,10 @@ jobs:
         include:
           - perl: 5.36
             coverage: true
+          - perl: 5.12
+            less_than_5_14: true
+          - perl: 5.10
+            less_than_5_14: true
 
     name: Perl ${{ matrix.perl }}
     steps:
@@ -34,7 +38,20 @@ jobs:
         with:
           perl-version: ${{ matrix.perl }}
       - name: Install dependencies
-        run: cpanm -nq --installdeps --with-develop --with-recommends .
+        run: cpm install --with-develop --with-recommends
+
+      - name: Install optional deps
+        run: |
+          cpm install Cpanel::JSON::XS
+          cpm install DBD::SQLite
+          cpm install Teng
+          cpm install DBIx::Class
+          cpm install SQL::Translator
+
+      - name: 'Install optional deps for less than 5.14'
+        if: ${{ !matrix.less_than_5_14 }}
+        run: |
+          cpm install Aniki
 
       - name: Build
         run: |
