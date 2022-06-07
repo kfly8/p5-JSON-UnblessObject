@@ -68,7 +68,7 @@
          "web" : "https://github.com/kfly8/p5-JSON-UnblessObject"
       }
    },
-   "version" : "0.01",
+   "version" : "0.02",
    "x_authority" : "cpan:KFLY",
    "x_serialization_backend" : "JSON::PP version 4.06",
    "x_static_install" : 1
